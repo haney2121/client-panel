@@ -1,13 +1,19 @@
 import React, { Component } from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
 import AppNavBar from "./components/layout/AppNavBar";
 
 class App extends Component {
   render() {
     return (
-      <div className="">
-        <AppNavBar />
-      </div>
+      <Router>
+        <div className="">
+          <AppNavBar />
+          <div className="container">
+            <h1>Hello World!</h1>
+          </div>
+        </div>
+      </Router>
     );
   }
 }
