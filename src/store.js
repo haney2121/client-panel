@@ -4,7 +4,8 @@ import "firebase/firestore";
 import { reactReduxFirebase, firebaseReducer } from "react-redux-firebase";
 import { reduxFirestore, firestoreReducer } from "redux-firestore";
 // Reducers
-// @todo
+import notifyReducer from './reducers/notifyReducer';
+import settingsReducer from './reducers/settingsReducer';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA0QKOp6GDVDEeKebO0LBjYmXS32jex2jY",
@@ -23,7 +24,9 @@ const rrfConfig = {
 //Initialize Firebase instance
 firebase.initializeApp(firebaseConfig);
 //Initialize firestore
-// const firestore = firebase.firestore();
+const firestore = firebase.firestore();
+const settings = { timestampsInSnapshots: true };
+firestore.settings(settings);
 
 //Add reactReduxFirebase enchancer when making store creator
 const createStoreWithFirebase = compose(
@@ -34,10 +37,25 @@ const createStoreWithFirebase = compose(
 //Add firebase to reducers
 const rootReducer = combineReducers({
   firebase: firebaseReducer,
-  firestore: firestoreReducer // required for firestore
+  firestore: firestoreReducer,
+  notify: notifyReducer,
+  settings: settingsReducer  // required for firestore
 });
+
+// Check for settings in local storage
+if (localStorage.getItem('setting') === null) {
+  //default settings
+  const defaultSettings = {
+    disabledBalanceOnAdd: true,
+    disabledBalanceOnEdit: false,
+    allowRegistration: true
+  }
+  //set to localStorage
+  localStorage.setItem("settings", JSON.stringify(defaultSettings));
+}
 // Create Store with reducer and inital state
-const initalState = {};
+const initalState = { settings: JSON.parse(localStorage.getItem("settings")) };
+
 const store = createStoreWithFirebase(
   rootReducer,
   initalState,
